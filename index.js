@@ -11,8 +11,6 @@ const LightSwitch = require('./Routes/lightswitch.js');
 const user = require('./Routes/user.js');
 const house = require('./Routes/house.js');
 const room = require('./Routes/room.js');
-const serverless = require('serverless-http');
-const router = express.Router();
 
 
 app.use(cors());
@@ -31,34 +29,6 @@ app.get("/", (req, res) => {
   res.write('<h1>Hello from Express.js!</h1>');
   res.end();
 });
-const options = {
-  definition: {
-    openapi: "3.1.0",
-    info: {
-      title: "Smart house Express API with Swagger",
-      version: "0.0.1",
-      description:
-        "This is a simple CRUD API application made with Express and documented with Swagger",
-      license: {
-        name: "MIT",
-        url: "https://spdx.org/licenses/MIT.html",
-      },
-      contact: {
-        name: "smart house",
-        url: "test",
-        email: "info@email.com",
-      },
-    },
-    servers: [
-      {
-        url: "http://localhost:3000",
-      },
-    ],
-  },
-  apis: ["./Routes/*.js","./Models/*.js"],
-};
-
-const specs = swaggerJsdoc(options);
 
 app.use(
   "/api-docs",
