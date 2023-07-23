@@ -4,12 +4,16 @@ var cors = require('cors')
 const bodyParser= require('body-parser');
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require('./swagger-output.json')
 const mongoose=require('mongoose');
 require('dotenv/config');
 const LightSwitch = require('./Routes/lightswitch.js');
 const user = require('./Routes/user.js');
 const house = require('./Routes/house.js');
 const room = require('./Routes/room.js');
+const serverless = require('serverless-http');
+const router = express.Router();
+
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -23,7 +27,9 @@ app.use('/api/house',house);
 app.use('/api/room',room);
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.write('<h1>Hello from Express.js!</h1>');
+  res.end();
 });
 const options = {
   definition: {
@@ -57,7 +63,7 @@ const specs = swaggerJsdoc(options);
 app.use(
   "/api-docs",
   swaggerUi.serve,
-  swaggerUi.setup(specs, { explorer: true })
+  swaggerUi.setup(swaggerFile, { explorer: true })
 );
 
 app.listen(process.env.port, () => {

@@ -11,6 +11,10 @@ const LightSwitchSchema = mongoose.Schema(
             type : String,
             required : true
         },
+        enabled: {
+            type : Number,
+            default:true
+        },
         MqttLogin: {
             type : String,
             required : true

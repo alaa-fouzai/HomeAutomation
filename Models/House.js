@@ -17,6 +17,10 @@ const HouseSchema = mongoose.Schema(
         ,
         Rooms: [String]
         ,
+        enabled: {
+            type : Number,
+            default:true
+        },
     }
 );
 

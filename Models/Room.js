@@ -11,6 +11,10 @@ const RoomSchema = mongoose.Schema(
             type : String,
             required : true
         },
+        enabled: {
+            type : Number,
+            default:true
+        },
         Owner: [Object]
         ,
         Devices: [Object]
