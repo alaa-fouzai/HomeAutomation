@@ -7,95 +7,12 @@ const LightSwitch = require('../Models/LightSwitch.js');
 const Mongoose=require('mongoose');
 var object = require('lodash/fp/object');
 var util = require('../utilities/utilities');
-async function verifyPOSTToken(req, res, next) {
-    let payload;
-    var bearerToken;
-    var bearerHeader = req.headers["authorization"];
-    
-    if(bearerHeader === 'null') {
-        return res.status(403).send('Unauthorized request')
-    }
-    if (typeof bearerHeader !== 'undefined') {
-        var bearer = bearerHeader.split(" ");
-        bearerToken = bearer[1];
-        req.token = bearerToken;
-    } else {
-        return res.status(403);
-    }
-    console.log(req.token);
-    try{ payload = jwt.verify(req.token, process.env.token_Key);} 
-    catch (e) {
-        return res.status(403).send('Unauthorized request')
-    }
-    if(!payload) {
-        return res.status(403).send('Unauthorized request')
-    }
-    decoded=jwt.decode(req.token, {complete: true});
-    /*
-    {
-        email: 'admin@admin.com',
-        id: '63f9fd6ec58ecd3304639e83',
-        iat: 1677956185
-    }*/
-    //check decoded is the same as email address and with same id
-    const user =await User.find({ email : req.body.email }).limit(1);
-    if (user === undefined || user.length == 0 ) {
-        return res.status(401).send('Unauthorized request');
-    }
-    if ( user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
-        req.userId = decoded.payload.id;
-        req.user = user[0];
-        next()
-    }else {
-        return res.status(401).send('Unauthorized request');
-    }
-}
-async function verifyGETToken(req, res, next) {
-    let payload;
-    var bearerToken;
-    var bearerHeader = req.headers["authorization"];
-    if(bearerHeader === 'null') {
-        return res.status(403).send('Unauthorized request')
-    }
-    if (typeof bearerHeader !== 'undefined') {
-        var bearer = bearerHeader.split(" ");
-        bearerToken = bearer[1];
-        req.token = bearerToken;
-    } else {
-        return res.status(403);
-    }
-    try{ payload = jwt.verify(req.token, process.env.token_Key);} 
-    catch (e) {
-        return res.status(400).send('Invalid User');
-    }
-    if(!payload) {
-        return res.status(401).send('Unauthorized request');
-    }
-    decoded=jwt.decode(req.token, {complete: true});
-    /*
-    {
-        email: 'admin@admin.com',
-        id: '63f9fd6ec58ecd3304639e83',
-        iat: 1677956185
-    }*/
-    //check decoded is the same as email address and with same id
-    const user =await User.find({ email : req.query.email }).limit(1);
-    console.log(user)
-    console.log()
-    console.log()
-    if (user === undefined || user.length == 0 ) {
-        return res.status(401).send('Unauthorized request');
-    }
-    if ( user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
-        req.userId = decoded.payload.id;
-        req.user = user[0];
-        next()
-    }else {
-        return res.status(401).send('Unauthorized request');
-    }
-}
-router.post('/AddNew',verifyPOSTToken,async (req,res) =>
+
+router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
 {
+    /*
+     * #swagger.tags = ["LightSwitch"]
+     */
     try{
         //let user = await User.findOne({ _id : req.userId  }).limit(1);
         //console.log(req.userId);
@@ -135,8 +52,11 @@ router.post('/AddNew',verifyPOSTToken,async (req,res) =>
     }
 
 });
-router.post('/Authlightswitch',verifyPOSTToken,async (req,res) =>
+router.post('/Authlightswitch',util.verifyPOSTToken,async (req,res) =>
 {
+    /*
+     * #swagger.tags = ["LightSwitch"]
+     */
     /*let user = await User.findOne({ _id : req.userId  }).limit(1);
     if (user.enabled == 1) {*/
     try{
@@ -175,19 +95,22 @@ router.post('/Authlightswitch',verifyPOSTToken,async (req,res) =>
     res.json({ status:"err",message:"problem" });
 }*/
 });
-router.post('/ChangeState',verifyPOSTToken,async (req,res) =>
+router.post('/ChangeState',util.verifyPOSTToken,async (req,res) =>
 {
+    /*
+     * #swagger.tags = ["LightSwitch"]
+     */
     let user = await User.findOne({ _id : req.userId  }).limit(1);
     if (user.enabled == 1) {
     try{
-        let c = await Chat.findOne({"_id" : Mongoose.Types.ObjectId(req.body.id) } ).limit(1);
+        let c = await LightSwitch.findOne({"_id" : Mongoose.Types.ObjectId(req.body.id) } ).limit(1);
         console.log(c)
         c.state = (c.state === true ) ? c.state = false : c.state = true ;
         console.log(c);
         await c.save();
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.json({status:"ok" , message: 'State Changed',chat : c });
+        res.json({status:"ok" , message: 'State Changed',LightSwitch : c });
         return ;
     }catch (err) {
         res.header("Access-Control-Allow-Headers", "*");

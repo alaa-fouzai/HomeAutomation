@@ -2,38 +2,11 @@ const express = require('express');
 const router =express.Router();
 const User  = require('../Models/User');
 var jwt = require('jsonwebtoken');
-/**
- * @swagger
- * tags:
- *   name: User
- *   description: The User managing API
- * /api/users/register:
- *   post:
- *     summary: Create a new User
- *     tags: [User]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/User'
- *     responses:
- *       200:
- *         message: Account Create ! You can now Login.
- *         token : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZvdXphaS5hbGFhQGdtYWlsLmNvbSIsImlkIjoiNjRiNDRmNDJlMTAzMDU0N2M1YTBjNzBhIiwiaWF0IjoxNjg5NTM4MzcwfQ.TN8UVQ2yjbvjJW4507Sx9hOApHzlA8xa5FiqQy1QSNg
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       500:
- *         description: Some server error
- *
- */
-
 router.post('/register',async (req,res) =>
-{/*
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZvdXphaS5hbGFhQGdtYWlsLmNvbSIsImlkIjoiNjRiNDRmNDJlMTAzMDU0N2M1YTBjNzBhIiwiaWF0IjoxNjg5NTM4MzcwfQ.TN8UVQ2yjbvjJW4507Sx9hOApHzlA8xa5FiqQy1QSNg
-*/
+{
+    /*
+     * #swagger.tags = ["User"]
+     */
     let user=new User({
         FirstName : req.body.FirstName,
         LastName :req.body.LastName,
@@ -67,6 +40,10 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZvdXphaS5hbGFhQGdtYWlsLmNvbSI
 
 });
 router.get('/users',async (req , res)=>{
+
+    /*
+     * #swagger.tags = ["User"]
+     */
     try{
         const user=await User.find().limit(5);
         res.header("Access-Control-Allow-Headers", "*");
@@ -76,9 +53,12 @@ router.get('/users',async (req , res)=>{
     }
 });
 router.post('/user',async (req , res)=>{
+    /*
+     * #swagger.tags = ["User"]
+     */
     try{
         var decoded = jwt.verify(req.body.token,process.env.token_Key );
-        const user=await User.findOne({ _id: decoded.id });;
+        const user=await User.findOne({ _id: decoded.id });
         res.header("Access-Control-Allow-Headers", "*");
         res.json(user);
     }catch (e) {
@@ -86,7 +66,10 @@ router.post('/user',async (req , res)=>{
     }
 });
 router.post('/login',async (req,res) =>
-{
+{    
+    /*
+     * #swagger.tags = ["User"]
+     */
     try{
         // await new Promise(resolve => setTimeout(resolve, 5000));
         const NewUser =await User.find({ email : req.body.email  }).limit(1);
@@ -128,7 +111,9 @@ function sleep(ms) {
 }
 router.post('/loginGmail',async (req,res) =>
 {
-
+    /*
+     * #swagger.tags = ["User"]
+     */
     if (!req.body.resp.email)
     {
         res.json({status:"err" , message: 'email error'});
@@ -163,6 +148,9 @@ router.post('/loginGmail',async (req,res) =>
     }
 });
 router.post('/RegisterGmail',async (req,res) => {
+    /*
+     * #swagger.tags = ["User"]
+     */
     console.log('New Request :',req.body);
     if (!req.body.resp.email)
     {
@@ -201,9 +189,59 @@ router.post('/RegisterGmail',async (req,res) => {
         res.json({ message:err.message });
     }
 });
+router.put("/updateUser/:id", async function(req, res) {
+    /*
+     * #swagger.tags = ["User"]
+     */
+    var id = req.params.id;
+    const user=await User.findById({ _id: id });
+    console.log(id);
+    console.log(user);
+    if (user) {
+        Object.assign(user, {
+        FirstName: req.body.FirstName ? req.body.FirstName : user.FirstName,
+        LastName: req.body.LastName ? req.body.LastName : user.LastName,
+        email: req.body.email ? req.body.email : user.email
+        })
+        user
+        .save()
+        .then((saved) => {
+            res.send(saved)
+        })
+        .catch((error) => res.status(500).send({ ...error }))
+    } else {
+        res.status(404).send({ error: 'user error' })
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    /*
+     * #swagger.tags = ["User"]
+     */
+    try {
+    var id = req.params.id;
+    const user=await User.findById({ _id: id });
+    console.log(id);
+    console.log(user);
+    if (user) {
+        user.enabled =false;
+        user
+        .save()
+        .then((saved) => {
+            res.send(saved)
+        })
+        .catch((error) => res.status(500).send({ ...error }))
+    } else {
+        res.status(404).send({ error: 'user error' })
+    }
+        
+    } catch (error) {
+      res.status(400).send({ error: error.message })
+    }
+  })
+
 function CreateJWT(email,id) {
     let token = jwt.sign({email:email,id:id},process.env.token_Key);
     return token;
 }
-
 module.exports = router;

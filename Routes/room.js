@@ -101,6 +101,9 @@ async function verifyGETToken(req, res, next) {
 
 /*****problem */
 router.get('/GetRoom',verifyGETToken,async(req,res)=>{
+    /*
+     * #swagger.tags = ["Room"]
+     */
     if (req.user.enabled && req.user.Houses.includes(req.query.houseId)) {
     let h = await House.find({ "_id" : req.query.houseId });
     res.header("Access-Control-Allow-Origin", "*");
@@ -118,6 +121,9 @@ router.get('/GetRoom',verifyGETToken,async(req,res)=>{
     "email":"fouzai.alaa@gmail.com"
 }*/
 router.post('/AddRoom',verifyPOSTToken,async(req,res)=>{
+    /*
+     * #swagger.tags = ["Room"]
+     */
     try{
          if (req.body.houseId === null ) {
             res.json({ message:"select a house" });
@@ -148,19 +154,5 @@ router.post('/AddRoom',verifyPOSTToken,async(req,res)=>{
         res.header("Access-Control-Allow-Headers", "*");
         res.json({ message:err.message });
     }
-});
-router.post('/GetAllHouses',verifyPOSTToken,async(req,res)=>{
-    console.log(req.body);
-    try {
-    const records = await House.find().where('_id').in(req.user.Houses).exec();
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.json({status:"ok" , message: 'Houses found', Houses : records });
-    } 
-    catch(e) {
-    console.log(e);
-    res.status(404).send('Not found');
-    }
-    return ;
 });
 module.exports = router;

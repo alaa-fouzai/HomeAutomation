@@ -96,6 +96,9 @@ async function verifyGETToken(req, res, next) {
 }
 
 router.get('/Gethouse',verifyGETToken,async(req,res)=>{
+    /*
+     * #swagger.tags = ["House"]
+     */
     if (req.user.enabled && req.user.Houses.includes(req.query.houseId)) {
     let h = await House.find({ "_id" : req.query.houseId });
     res.header("Access-Control-Allow-Origin", "*");
@@ -113,6 +116,9 @@ router.get('/Gethouse',verifyGETToken,async(req,res)=>{
     "email":"fouzai.alaa@gmail.com"
 }*/
 router.post('/Addhouse',verifyPOSTToken,async(req,res)=>{
+    /*
+     * #swagger.tags = ["House"]
+     */
     try{
         let p = new House({
             Name : req.body.HouseName,
@@ -135,6 +141,9 @@ router.post('/Addhouse',verifyPOSTToken,async(req,res)=>{
     }
 });
 router.post('/GetAllHouses',verifyPOSTToken,async(req,res)=>{
+    /*
+     * #swagger.tags = ["House"]
+     */
     console.log(req.body);
     try {
     const records = await House.find().where('_id').in(req.user.Houses).exec();
