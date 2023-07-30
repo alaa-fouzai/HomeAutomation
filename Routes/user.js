@@ -25,7 +25,7 @@ router.post('/register',async (req,res) =>
             token = CreateJWT(user.email,user._id);
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            res.json({status:"ok" , message: 'Account Create ! You can now Login',token : token });
+            res.json({status:"ok" , message: 'Account Create ! You can now Login',token : token , user :user });
             return ;
         }
 

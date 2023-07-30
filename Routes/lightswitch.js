@@ -80,6 +80,7 @@ router.post('/Authlightswitch',async (req,res) =>
      */
     /*let user = await User.findOne({ _id : req.userId  }).limit(1);
     if (user.enabled == 1) {*/
+    console.log("Authlightswitch");
     try{
         let ls = await LightSwitch.findOne({ "UUID" : req.body.Login });
         //console.log(ls.Active);
@@ -87,13 +88,14 @@ router.post('/Authlightswitch',async (req,res) =>
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             console.log("null");
-            res.status(404).send('Not found');
+            res.status(400).send('Not found');
             return ;
         }
         if (! ls.Active) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            res.status(404).send('Not Active');
+            console.log("Not Active");
+            res.status(400).send('Not Active');
             return ;
         }
         if (ls.MqttLogin === req.body.Login && ls.Mqttpass === req.body.password) {
@@ -105,7 +107,8 @@ router.post('/Authlightswitch',async (req,res) =>
         }
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.status(404).send('Not found');
+        console.log('Not found');
+        res.status(400).send('Not found');
         return ;
         
     }catch (err) {
