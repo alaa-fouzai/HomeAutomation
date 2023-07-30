@@ -7,6 +7,7 @@ const LightSwitch = require('../Models/LightSwitch.js');
 const Mongoose=require('mongoose');
 var object = require('lodash/fp/object');
 var util = require('../utilities/utilities');
+const Room = require('../Models/Room');
 
 router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
 {
@@ -41,9 +42,32 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
         });
         newLightSwitch = await newLightSwitch.save();
         console.log(newLightSwitch);
+        // add light to user,and room 
+        let h;
+        let r;
+        if (req.user.enabled && req.user.Houses.includes(req.body.houseId)) {
+            h = await House.find({ "_id" : req.body.houseId });
+            h.Devices.push({"type":"LightSwitch" , "id":newLightSwitch._id });
+        
+        } else {
+            x = await LightSwitch.deleteOne({ _id: newLightSwitch._id });
+            res.status(400).send('not your house');
+            return ;
+        }
+        //check room
+        if (req.user.enabled && h.Rooms.includes(req.body.roomId)) {
+            r = await Room.find({ "_id" : req.body.roomId });
+            r.Devices.push({"type":"LightSwitch" , "id":newLightSwitch._id });
+        } else {
+            r = await LightSwitch.deleteOne({ _id: newLightSwitch._id });
+            res.status(400).send('not your room');
+            return ;
+        }
+        h=await h.save();
+        r=await r.save();
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.json({status:"ok" , message: 'Switch Added' , LightSwitch:newLightSwitch});
+        res.json({status:"ok" , message: 'Switch Added' , LightSwitch:newLightSwitch,house:h,room:r});
         return ;
     }catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
