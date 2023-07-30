@@ -23,7 +23,6 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
         newUUid = randomUUID();
         while(true) {
             let L = await LightSwitch.findOne({ "UUID" : newUUid });
-            console.log(L)
             if (!L) {
                 console.log("newLightSwitch");
                 break;
@@ -32,7 +31,6 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
                 console.log(newUUid);
               }
         }
-        console.log("unique UUID :",newUUid);
         let newLightSwitch = new LightSwitch({
             Name:req.body.Name,
             UUID: newUUid,
@@ -42,13 +40,11 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
 
         });
         newLightSwitch = await newLightSwitch.save();
-        console.log(newLightSwitch);
         // add light to user,and room 
         let h;
         let r;
         if (req.user.enabled && req.user.Houses.includes(req.body.houseId)) {
             h = await House.findOne({ "_id" : req.body.houseId });
-            console.log(h);
             h.Devices.push({"type":"LightSwitch" , "id":newLightSwitch._id });
         
         } else {
