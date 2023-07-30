@@ -52,7 +52,7 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
     }
 
 });
-router.post('/Authlightswitch',util.verifyPOSTToken,async (req,res) =>
+router.post('/Authlightswitch',async (req,res) =>
 {
     /*
      * #swagger.tags = ["LightSwitch"]
@@ -60,7 +60,7 @@ router.post('/Authlightswitch',util.verifyPOSTToken,async (req,res) =>
     /*let user = await User.findOne({ _id : req.userId  }).limit(1);
     if (user.enabled == 1) {*/
     try{
-        let ls = await LightSwitch.findOne({ "UUID" : req.body.UUID });
+        let ls = await LightSwitch.findOne({ "UUID" : req.body.Login });
         //console.log(ls.Active);
         if (!ls) {
             res.header("Access-Control-Allow-Origin", "*");
