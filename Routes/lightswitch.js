@@ -8,6 +8,7 @@ const Mongoose=require('mongoose');
 var object = require('lodash/fp/object');
 var util = require('../utilities/utilities');
 const Room = require('../Models/Room');
+const House = require('../Models/House');
 
 router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
 {
@@ -46,7 +47,8 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
         let h;
         let r;
         if (req.user.enabled && req.user.Houses.includes(req.body.houseId)) {
-            h = await House.find({ "_id" : req.body.houseId });
+            h = await House.findOne({ "_id" : req.body.houseId });
+            console.log(h);
             h.Devices.push({"type":"LightSwitch" , "id":newLightSwitch._id });
         
         } else {
@@ -56,7 +58,7 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
         }
         //check room
         if (req.user.enabled && h.Rooms.includes(req.body.roomId)) {
-            r = await Room.find({ "_id" : req.body.roomId });
+            r = await Room.findOne({ "_id" : req.body.roomId });
             r.Devices.push({"type":"LightSwitch" , "id":newLightSwitch._id });
         } else {
             r = await LightSwitch.deleteOne({ _id: newLightSwitch._id });
