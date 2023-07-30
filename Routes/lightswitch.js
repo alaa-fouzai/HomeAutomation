@@ -34,9 +34,9 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
         let newLightSwitch = new LightSwitch({
             Name:req.body.Name,
             UUID: newUUid,
-            MqttLogin: RandomString(6),
+            MqttLogin: newUUid,
             //encrypt
-            Mqttpass: RandomString(6)
+            Mqttpass: RandomString(6)+"!:!"+RandomString(6)
 
         });
         newLightSwitch = await newLightSwitch.save();
@@ -50,7 +50,6 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
         console.log(err);
         res.json({ message:err.message });
     }
-
 });
 router.post('/Authlightswitch',async (req,res) =>
 {
