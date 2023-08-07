@@ -80,9 +80,6 @@ async function verifyGETToken(req, res, next) {
     }*/
     //check decoded is the same as email address and with same id
     const user =await User.find({ email : req.query.email }).limit(1);
-    console.log(user)
-    console.log()
-    console.log()
     if (user === undefined || user.length == 0 ) {
         return res.status(401).send('Unauthorized request');
     }
