@@ -95,7 +95,7 @@ async function verifyGETToken(req, res, next) {
     }
 }
 
-router.get('/Gethouse',verifyGETToken,async(req,res)=>{
+router.get('/Gethouse',util.verifyGETToken,async(req,res)=>{
     /*
      * #swagger.tags = ["House"]
      */
@@ -115,7 +115,7 @@ router.get('/Gethouse',verifyGETToken,async(req,res)=>{
     "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZvdXphaS5hbGFhQGdtYWlsLmNvbSIsImlkIjoiNjRiNDRmNDJlMTAzMDU0N2M1YTBjNzBhIiwiaWF0IjoxNjg5NTM4MzcwfQ.TN8UVQ2yjbvjJW4507Sx9hOApHzlA8xa5FiqQy1QSNg",
     "email":"fouzai.alaa@gmail.com"
 }*/
-router.post('/Addhouse',verifyPOSTToken,async(req,res)=>{
+router.post('/Addhouse',util.verifyPOSTToken,async(req,res)=>{
     /*
      * #swagger.tags = ["House"]
      */
@@ -140,7 +140,7 @@ router.post('/Addhouse',verifyPOSTToken,async(req,res)=>{
         res.json({ message:err.message });
     }
 });
-router.post('/GetAllHouses',verifyPOSTToken,async(req,res)=>{
+router.post('/GetAllHouses',util.verifyPOSTToken,async(req,res)=>{
     /*
      * #swagger.tags = ["House"]
      */

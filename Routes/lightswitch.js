@@ -80,7 +80,6 @@ router.post('/Authlightswitch',async (req,res) =>
      */
     /*let user = await User.findOne({ _id : req.userId  }).limit(1);
     if (user.enabled == 1) {*/
-    console.log("Authlightswitch");
     try{
         let ls = await LightSwitch.findOne({ "UUID" : req.body.Login });
         //console.log(ls.Active);
