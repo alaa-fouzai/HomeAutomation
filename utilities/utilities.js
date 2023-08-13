@@ -53,7 +53,9 @@ async function verifyPOSTToken(req, res, next) {
 async function verifyGETToken(req, res, next) {
     let payload;
     var bearerToken;
+    
     var bearerHeader = req.headers["authorization"];
+    
     if(bearerHeader === 'null') {
         return res.status(403).send('Unauthorized request')
     }
@@ -64,13 +66,18 @@ async function verifyGETToken(req, res, next) {
     } else {
         return res.status(403);
     }
-    try{ payload = jwt.verify(req.token, process.env.token_Key);} 
+    
+    try{ 
+        payload = jwt.verify(req.token, process.env.token_Key);
+        
+    } 
     catch (e) {
         return res.status(400).send('Invalid User');
     }
     if(!payload) {
         return res.status(401).send('Unauthorized request');
     }
+    
     decoded=jwt.decode(req.token, {complete: true});
     /*
     {
@@ -80,6 +87,7 @@ async function verifyGETToken(req, res, next) {
     }*/
     //check decoded is the same as email address and with same id
     const user =await User.find({ email : req.query.email }).limit(1);
+    
     if (user === undefined || user.length == 0 ) {
         return res.status(401).send('Unauthorized request');
     }

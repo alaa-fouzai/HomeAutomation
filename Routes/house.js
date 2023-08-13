@@ -70,4 +70,23 @@ router.get('/GetAllHouses',util.verifyGETToken,async(req,res)=>{
     }
     return ;
 });
+router.get('/GetUserHouses',util.verifyGETToken,async(req,res)=>{
+    /*
+     * #swagger.tags = ["House"]
+     */
+    try {
+    //const records = await House.find().where('_id').in(req.user.Houses).exec();
+    const records = await House.find({
+        Owner: {$elemMatch: {admin: req.userId}}
+     })
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.json({status:"ok" , message: 'Houses found', Houses : records });
+    } 
+    catch(e) {
+    console.log(e);
+    res.status(404).send('Not found');
+    }
+    return ;
+});
 module.exports = router;
