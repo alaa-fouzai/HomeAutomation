@@ -32,11 +32,12 @@ router.post('/register',async (req,res) =>
 
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.json({status:"err" , message: 'Email Already Exists'});
+        //res.json({status:"err" , message: 'Email Already Exists'});
+        res.status(401).send('Email Already Exists');
     }catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
         console.log("register ",err.message)
-        res.json({ message:"error" });
+        res.status(400).send('Bad request');
     }
 
 });

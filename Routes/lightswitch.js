@@ -49,7 +49,7 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
         
         } else {
             x = await LightSwitch.deleteOne({ _id: newLightSwitch._id });
-            res.status(400).send('not your house');
+            res.status(401).send('not your house');
             return ;
         }
         //check room
@@ -58,7 +58,7 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
             r.Devices.push({"type":"LightSwitch" , "id":newLightSwitch._id });
         } else {
             r = await LightSwitch.deleteOne({ _id: newLightSwitch._id });
-            res.status(400).send('not your room');
+            res.status(401).send('not your room');
             return ;
         }
         h=await h.save();
@@ -70,7 +70,7 @@ router.post('/AddNew',util.verifyPOSTToken,async (req,res) =>
     }catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
         console.log(err);
-        res.json({ message:err.message });
+        res.status(400).send('Bad request');
     }
 });
 router.post('/Authlightswitch',async (req,res) =>
@@ -81,7 +81,7 @@ router.post('/Authlightswitch',async (req,res) =>
     /*let user = await User.findOne({ _id : req.userId  }).limit(1);
     if (user.enabled == 1) {*/
     try{
-        let ls = await LightSwitch.findOne({ "UUID" : req.body.Login });
+        let ls = await LightSwitch.findOne({ "UUID" : req.body.client.substring(7) });
         //console.log(ls.Active);
         if (!ls) {
             res.header("Access-Control-Allow-Origin", "*");
@@ -97,7 +97,7 @@ router.post('/Authlightswitch',async (req,res) =>
             res.status(400).send('Not Active');
             return ;
         }
-        if (ls.MqttLogin === req.body.Login && ls.Mqttpass === req.body.password) {
+        if (ls.MqttLogin === req.body.login && ls.Mqttpass === req.body.password) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             console.log("success");

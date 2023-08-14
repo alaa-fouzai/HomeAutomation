@@ -67,4 +67,61 @@ router.post('/AddRoom',util.verifyPOSTToken,async(req,res)=>{
         res.json({ message:err.message });
     }
 });
+router.put("/update/:id",util.verifyPutToken, async function(req, res) {
+    /*
+     * #swagger.tags = ["Room"]
+     */
+    var id = req.params.id;
+    console.log(id);
+    const room=await Room.findById({ _id: id });
+    console.log(id);
+    console.log(room);
+    if (room) {
+        Object.assign(room, {
+            Name: req.body.Name ? req.body.Name : room.Name,
+            Devices: req.body.Devices ? req.body.Devices : room.Devices,
+        })
+        room
+        .save()
+        .then((saved) => {
+            res.send(saved)
+        })
+        .catch((error) => res.status(400).send({ ...error }))
+    } else {
+        res.status(404).send({ error: 'room error' })
+    }
+});
+
+router.delete('/delete/:id',util.verifyDeleteToken, async (req, res) => {
+    /*
+     * #swagger.tags = ["Room"]
+     */
+    try {
+    var id = req.params.id;
+    let h = await House.findOne({ Rooms: req.params.id , Owner: {$elemMatch: {admin: req.userId}}});
+    if ( h === undefined || h.length == 0) {
+        
+    } else {
+        var index = h.Rooms.indexOf(id);
+            if (index !== -1) {
+                h.Rooms.splice(index, 1);
+            }
+    }
+    const room=await Room.findById({ _id: id });
+    if (room) {
+        room.enabled =false;
+        room
+        .save()
+        .then((saved) => {
+            res.send({ room:saved,house:h })
+        })
+        .catch((error) => res.status(500).send({ ...error }))
+    } else {
+        res.status(404).send({ error: 'room error' })
+    } 
+    } catch (error) {
+      res.status(400).send({ error: error.message })
+    }
+  })
+
 module.exports = router;
