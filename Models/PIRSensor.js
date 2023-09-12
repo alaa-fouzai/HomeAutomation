@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongoose');
 const mongoose=require('mongoose');
 
-const LightSwitchSchema = mongoose.Schema(
+const pirSchema = mongoose.Schema(
     {
         id: {
             type : String,
@@ -14,14 +14,6 @@ const LightSwitchSchema = mongoose.Schema(
         enabled: {
             type : Number,
             default:true
-        },
-        MqttLogin: {
-            type : String,
-            required : true
-        },
-        Mqttpass: {
-            type : String,
-            required : true
         },
         UUID: {
             type : String,
@@ -53,4 +45,4 @@ const LightSwitchSchema = mongoose.Schema(
     }
 );
 
-module.exports=mongoose.model('LightSwitch',LightSwitchSchema);
+module.exports=mongoose.model('PIRSensor',pirSchema);

@@ -91,6 +91,8 @@ const UserSchema = mongoose.Schema(
         ,
         Houses: [String]
         ,
+        Hubs: [String]
+        ,
     }
 );
 
