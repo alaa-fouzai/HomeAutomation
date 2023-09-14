@@ -1,24 +1,24 @@
 const { ObjectId } = require('mongoose');
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
 
 const RoomSchema = mongoose.Schema(
     {
         id: {
-            type : String,
-            required : false
+            type: String,
+            required: false
         },
         Name: {
-            type : String,
-            required : true
+            type: String,
+            required: true
         },
         enabled: {
-            type : Number,
-            default:true
+            type: Number,
+            default: true
         },
         Owner: [Object]
         ,
-        Devices: [Object]
+        Devices: []
     }
 );
 
-module.exports=mongoose.model('Room',RoomSchema);
+module.exports = mongoose.model('Room', RoomSchema);

@@ -1,27 +1,27 @@
 const { ObjectId } = require('mongoose');
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
 
 const HouseSchema = mongoose.Schema(
     {
         id: {
-            type : String,
-            required : false
+            type: String,
+            required: false
         },
         Name: {
-            type : String,
-            required : true
+            type: String,
+            required: true
         },
         Owner: [Object]
         ,
         Devices: [Object]
         ,
-        Rooms: [String]
+        Rooms: []
         ,
         enabled: {
-            type : Number,
-            default:true
+            type: Number,
+            default: true
         },
     }
 );
 
-module.exports=mongoose.model('House',HouseSchema);
+module.exports = mongoose.model('House', HouseSchema);

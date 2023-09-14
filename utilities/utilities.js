@@ -1,18 +1,18 @@
 const { randomUUID } = require('crypto');
 const express = require('express');
-const router =express.Router();
-const User  = require('../Models/User');
+const router = express.Router();
+const User = require('../Models/User');
 var jwt = require('jsonwebtoken');
 const LightSwitch = require('../Models/Switch.js');
-const Mongoose=require('mongoose');
+const Mongoose = require('mongoose');
 var object = require('lodash/fp/object');
 
 async function verifyPOSTToken(req, res, next) {
     let payload;
     var bearerToken;
     var bearerHeader = req.headers["authorization"];
-    
-    if(bearerHeader === 'null') {
+
+    if (bearerHeader === 'null') {
         return res.status(403).send('Unauthorized request')
     }
     if (typeof bearerHeader !== 'undefined') {
@@ -22,14 +22,14 @@ async function verifyPOSTToken(req, res, next) {
     } else {
         return res.status(403);
     }
-    try{ payload = jwt.verify(req.token, process.env.token_Key);} 
+    try { payload = jwt.verify(req.token, process.env.token_Key); }
     catch (e) {
         return res.status(403).send('Unauthorized request')
     }
-    if(!payload) {
+    if (!payload) {
         return res.status(403).send('Unauthorized request')
     }
-    decoded=jwt.decode(req.token, {complete: true});
+    decoded = jwt.decode(req.token, { complete: true });
     /*
     {
         email: 'admin@admin.com',
@@ -37,25 +37,23 @@ async function verifyPOSTToken(req, res, next) {
         iat: 1677956185
     }*/
     //check decoded is the same as email address and with same id
-    const user =await User.find({ email : req.body.email }).limit(1);
-    if (user === undefined || user.length == 0 ) {
+    const user = await User.find({ email: req.body.email }).limit(1);
+    if (user === undefined || user.length == 0) {
         return res.status(401).send('Unauthorized request');
     }
-    if ( user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
+    if (user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
         req.userId = decoded.payload.id;
         req.user = user[0];
         next()
-    }else {
+    } else {
         return res.status(401).send('Unauthorized request');
     }
 }
 async function verifyGETToken(req, res, next) {
     let payload;
     var bearerToken;
-    
     var bearerHeader = req.headers["authorization"];
-    
-    if(bearerHeader === 'null') {
+    if (bearerHeader === 'null') {
         return res.status(403).send('Unauthorized request')
     }
     if (typeof bearerHeader !== 'undefined') {
@@ -65,19 +63,18 @@ async function verifyGETToken(req, res, next) {
     } else {
         return res.status(403);
     }
-    
-    try{ 
+    try {
         payload = jwt.verify(req.token, process.env.token_Key);
-        
-    } 
+
+    }
     catch (e) {
         return res.status(400).send('Invalid User');
     }
-    if(!payload) {
+    if (!payload) {
         return res.status(401).send('Unauthorized request');
     }
-    
-    decoded=jwt.decode(req.token, {complete: true});
+
+    decoded = jwt.decode(req.token, { complete: true });
     /*
     {
         email: 'admin@admin.com',
@@ -85,16 +82,16 @@ async function verifyGETToken(req, res, next) {
         iat: 1677956185
     }*/
     //check decoded is the same as email address and with same id
-    const user =await User.find({ email : req.query.email }).limit(1);
-    
-    if (user === undefined || user.length == 0 ) {
+    const user = await User.find({ email: decoded.payload.email }).limit(1);
+
+    if (user === undefined || user.length == 0) {
         return res.status(401).send('Unauthorized request');
     }
-    if ( user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
+    if (user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
         req.userId = decoded.payload.id;
         req.user = user[0];
         next()
-    }else {
+    } else {
         return res.status(401).send('Unauthorized request');
     }
 }
@@ -102,8 +99,8 @@ async function verifyPutToken(req, res, next) {
     let payload;
     var bearerToken;
     var bearerHeader = req.headers["authorization"];
-    
-    if(bearerHeader === 'null') {
+
+    if (bearerHeader === 'null') {
         return res.status(403).send('Unauthorized request')
     }
     if (typeof bearerHeader !== 'undefined') {
@@ -113,14 +110,14 @@ async function verifyPutToken(req, res, next) {
     } else {
         return res.status(403);
     }
-    try{ payload = jwt.verify(req.token, process.env.token_Key);} 
+    try { payload = jwt.verify(req.token, process.env.token_Key); }
     catch (e) {
         return res.status(403).send('Unauthorized request')
     }
-    if(!payload) {
+    if (!payload) {
         return res.status(403).send('Unauthorized request')
     }
-    decoded=jwt.decode(req.token, {complete: true});
+    decoded = jwt.decode(req.token, { complete: true });
     /*
     {
         email: 'admin@admin.com',
@@ -128,15 +125,15 @@ async function verifyPutToken(req, res, next) {
         iat: 1677956185
     }*/
     //check decoded is the same as email address and with same id
-    const user =await User.find({ email : payload.email }).limit(1);
-    if (user === undefined || user.length == 0 ) {
+    const user = await User.find({ email: payload.email }).limit(1);
+    if (user === undefined || user.length == 0) {
         return res.status(401).send('Unauthorized request');
     }
-    if ( user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
+    if (user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
         req.userId = decoded.payload.id;
         req.user = user[0];
         next()
-    }else {
+    } else {
         return res.status(401).send('Unauthorized request');
     }
 }
@@ -144,8 +141,8 @@ async function verifyDeleteToken(req, res, next) {
     let payload;
     var bearerToken;
     var bearerHeader = req.headers["authorization"];
-    
-    if(bearerHeader === 'null') {
+
+    if (bearerHeader === 'null') {
         return res.status(403).send('Unauthorized request')
     }
     if (typeof bearerHeader !== 'undefined') {
@@ -155,14 +152,14 @@ async function verifyDeleteToken(req, res, next) {
     } else {
         return res.status(403);
     }
-    try{ payload = jwt.verify(req.token, process.env.token_Key);} 
+    try { payload = jwt.verify(req.token, process.env.token_Key); }
     catch (e) {
         return res.status(403).send('Unauthorized request')
     }
-    if(!payload) {
+    if (!payload) {
         return res.status(403).send('Unauthorized request')
     }
-    decoded=jwt.decode(req.token, {complete: true});
+    decoded = jwt.decode(req.token, { complete: true });
     /*
     {
         email: 'admin@admin.com',
@@ -170,17 +167,17 @@ async function verifyDeleteToken(req, res, next) {
         iat: 1677956185
     }*/
     //check decoded is the same as email address and with same id
-    const user =await User.find({ email : payload.email }).limit(1);
-    if (user === undefined || user.length == 0 ) {
+    const user = await User.find({ email: payload.email }).limit(1);
+    if (user === undefined || user.length == 0) {
         return res.status(401).send('Unauthorized request');
     }
-    if ( user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
+    if (user[0].email === decoded.payload.email && user[0]._id.toString() === decoded.payload.id && user[0].enabled) {
         req.userId = decoded.payload.id;
         req.user = user[0];
         next()
-    }else {
+    } else {
         return res.status(401).send('Unauthorized request');
     }
 }
 
-module.exports = {verifyGETToken,verifyPOSTToken,verifyDeleteToken,verifyPutToken};
+module.exports = { verifyGETToken, verifyPOSTToken, verifyDeleteToken, verifyPutToken };

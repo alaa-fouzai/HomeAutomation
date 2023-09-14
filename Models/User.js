@@ -1,4 +1,4 @@
-const mongoose=require('mongoose');
+const mongoose = require('mongoose');
 /**
  * @swagger
  * components:
@@ -56,44 +56,44 @@ const mongoose=require('mongoose');
 const UserSchema = mongoose.Schema(
     {
         id: {
-            type : String,
-            required : false
+            type: String,
+            required: false
         },
         FirstName: {
-            type : String,
-            required : true
+            type: String,
+            required: true
         },
         LastName: {
-            type : String,
-            required : true
+            type: String,
+            required: true
         },
         email: {
-            type : String,
-            required : true
+            type: String,
+            required: true
         },
         password: {
-            type : String,
-            required : true
+            type: String,
+            required: true
         },
         picture: {
-            type : String,
-            required : false
+            type: String,
+            required: false
         },
         enabled: {
-            type : Number,
-            required : true
+            type: Number,
+            required: true
         },
         Created_date: {
-            type : Date,
-            default : Date.now()
+            type: Date,
+            default: Date.now()
         },
         Role: [String]
         ,
-        Houses: [String]
+        Houses: []
         ,
         Hubs: [String]
         ,
     }
 );
 
-module.exports=mongoose.model('User',UserSchema);
+module.exports = mongoose.model('User', UserSchema);

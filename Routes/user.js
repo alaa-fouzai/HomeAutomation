@@ -3,6 +3,11 @@ const router = express.Router();
 const User = require('../Models/User');
 var jwt = require('jsonwebtoken');
 var util = require('../utilities/utilities');
+const House = require('../Models/House.js');
+const Room = require('../Models/Room.js');
+const Switch = require('../Models/Switch.js');
+const Mongoose = require('mongoose');
+const object = require('lodash/object');
 router.post('/register', async (req, res) => {
     /*
      * #swagger.tags = ["User"]
@@ -52,6 +57,52 @@ router.get('/users', async (req, res) => {
         res.json({ message: err.message });
     }
 });
+router.get('/userInfo', util.verifyGETToken, async (req, res) => {
+
+    /*
+     * #swagger.tags = ["User"]
+     */
+    try {
+        const user = await User.findOne({ "email": req.user.email });
+        /*const Hubs = await Hub.find({
+            Owner: { $elemMatch: req.userId }
+        })
+        const LightSwitches = await Switch.findOne({ "UUID" : req.body.client });
+        const Houses = await House.find().where('_id').in(req.user.Houses).exec();
+        const Rooms = await Room.find({ "_id" : req.query.houseId });
+        const Switch = await Switch.findOne({"_id" : Mongoose.Types.ObjectId(req.body.id) } ).limit(1);
+        */
+        resp = { ...user }
+        console.log(typeof (user.Houses));
+        console.log(user.Houses.length);
+        for (i = 0; i < user.Houses.length; i++) {
+            Houses = await House.findOne().where('_id').in(req.user.Houses).exec();
+            for (j = 0; j < Houses.Rooms.length; j++) {
+                Rooms = await Room.findOne({ "_id": Houses.Rooms[j] });
+                for (k = 0; k < Rooms.Devices.length; k++) {
+                    if (Rooms.Devices[k].type === "switch") {
+                        sw = await Switch.where('_id').in(Rooms.Devices[k].id).exec();
+                        Rooms.Devices[k] = sw
+                    }
+
+                }
+                Houses.Rooms[j] = Rooms
+            }
+            user.Houses[i] = Houses
+            resp = { ...user }
+        }
+
+
+        console.log(resp);
+
+
+
+        res.header("Access-Control-Allow-Headers", "*");
+        res.json(resp._doc);
+    } catch (e) {
+        res.json({ message: e.message });
+    }
+});
 router.post('/user', async (req, res) => {
     /*
      * #swagger.tags = ["User"]
@@ -71,6 +122,7 @@ router.post('/login', async (req, res) => {
      */
     try {
         // await new Promise(resolve => setTimeout(resolve, 5000));
+        console.log("login");
         const NewUser = await User.find({ email: req.body.email }).limit(1);
         //console.log(NewUser.length);
         //await sleep(2000);
