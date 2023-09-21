@@ -66,18 +66,18 @@ router.post('/AddHubToUser', util.verifyPOSTToken, async (req, res) => {
             Name : req.body.HubName,
             Owner: [{"admin" :req.user._id.toString()}]
         });*/
-        let hub = Hub.findOne({ "UUID": req.body.hubUUID });
+        let hub = await Hub.findOne({ "UUID": req.body.hubUUID });
+        console.log(hub)
         hub.House.push(req.body.houseId);
         hub = await hub.save();
         //update user
-        console.log(p._id.toString())
-        u = await User.findOne({ "email": req.user.email });//change to user id
+        u = await User.findOne({ "email": req.body.email });//change to user id
         console.log(u)
-        u.Hubs.push(u._id.toString());
+        u.Hubs.push(hub._id.toString());
         u = await u.save();
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.json({ status: "ok", message: 'hub added sucessfully', hub: hub });
+        res.json({ status: "ok", message: 'hub added sucessfully', hub: hub, user: u });
         return;
     } catch (err) {
         res.header("Access-Control-Allow-Headers", "*");

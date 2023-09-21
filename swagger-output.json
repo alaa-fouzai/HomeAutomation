@@ -784,7 +784,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "HubName": {
+                "hubUUID": {
                   "example": "any"
                 },
                 "houseId": {
@@ -969,6 +969,15 @@
             "schema": {
               "type": "object",
               "properties": {
+                "ContactUUID": {
+                  "example": "any"
+                },
+                "houseId": {
+                  "example": "any"
+                },
+                "roomId": {
+                  "example": "any"
+                },
                 "email": {
                   "example": "any"
                 }
