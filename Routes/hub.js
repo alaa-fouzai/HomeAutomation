@@ -1,28 +1,28 @@
 const { randomUUID } = require('crypto');
 const express = require('express');
-const router =express.Router();
-const User  = require('../Models/User');
+const router = express.Router();
+const User = require('../Models/User');
 var jwt = require('jsonwebtoken');
 const Hub = require('../Models/Hub');
 const House = require('../Models/House');
-const Mongoose=require('mongoose');
+const Mongoose = require('mongoose');
 var object = require('lodash/fp/object');
 var util = require('../utilities/utilities');
 
 
-router.get('/Gethub',util.verifyGETToken,async(req,res)=>{
+router.get('/Gethub', util.verifyGETToken, async (req, res) => {
     /*
      * #swagger.tags = ["Hub"]
      */
     if (req.user.enabled && req.user.Houses.includes(req.query.houseId)) {
-    let h = await House.find({ "_id" : req.query.houseId });
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.json({status:"ok" , message: 'House', house : h });
+        let h = await House.find({ "_id": req.query.houseId });
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.json({ status: "ok", message: 'House', house: h });
     } else {
-    res.status(400).send('Not found');
+        res.status(400).send('Not found');
     }
-    return ;
+    return;
 });
 /*
 {
@@ -30,11 +30,11 @@ router.get('/Gethub',util.verifyGETToken,async(req,res)=>{
     "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZvdXphaS5hbGFhQGdtYWlsLmNvbSIsImlkIjoiNjRiNDRmNDJlMTAzMDU0N2M1YTBjNzBhIiwiaWF0IjoxNjg5NTM4MzcwfQ.TN8UVQ2yjbvjJW4507Sx9hOApHzlA8xa5FiqQy1QSNg",
     "email":"fouzai.alaa@gmail.com"
 }*/
-router.post('/AddHubToUser',util.verifyPOSTToken,async(req,res)=>{
+router.post('/AddHubToUser', util.verifyPOSTToken, async (req, res) => {
     /*
      * #swagger.tags = ["Hub"]
      */
-    try{
+    try {
 
 
         /**        // add light to user,and room 
@@ -62,147 +62,147 @@ router.post('/AddHubToUser',util.verifyPOSTToken,async(req,res)=>{
         r=await r.save(); */
 
 
-        let hub = new Hub({
+        /*let hub = new Hub({
             Name : req.body.HubName,
             Owner: [{"admin" :req.user._id.toString()}]
-        });
+        });*/
+        let hub = Hub.findOne({ "UUID": req.body.hubUUID });
         hub.House.push(req.body.houseId);
         hub = await hub.save();
         //update user
         console.log(p._id.toString())
-        u=await User.findOne({ "email" : req.user.email });
+        u = await User.findOne({ "email": req.user.email });//change to user id
         console.log(u)
         u.Hubs.push(u._id.toString());
         u = await u.save();
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.json({status:"ok" , message: 'hub added sucessfully',hub : hub });
-        return ;
-    }catch (err) {
+        res.json({ status: "ok", message: 'hub added sucessfully', hub: hub });
+        return;
+    } catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
-        res.json({ message:err.message });
+        res.json({ message: err.message });
     }
 });
-router.post('/AddHubToDatabase',util.verifyPOSTToken,async(req,res)=>{
+router.post('/AddHubToDatabase', util.verifyPOSTToken, async (req, res) => {
     /*
      * #swagger.tags = ["Hub"]
      */
-    try{
+    try {
         //let user = await User.findOne({ _id : req.userId  }).limit(1);
         //console.log(req.userId);
         //check if user is valid
         //console.log("unique UUID ");
         newUUid = randomUUID();
-        while(true) {
-            let L = await Hub.findOne({ "UUID" : newUUid });
+        while (true) {
+            let L = await Hub.findOne({ "UUID": newUUid });
             if (!L) {
                 console.log("newLightSwitch");
                 break;
-              } else {
+            } else {
                 newUUid = randomUUID();
                 console.log(newUUid);
-              }
+            }
         }
         let newHub = new Hub({
-            Name:req.body.Name,
+            Name: req.body.Name,
             UUID: newUUid,
             MqttLogin: RandomString(6),
             Mqttpass: RandomString(6),
-            Active:false
+            Active: false
         });
         newHub = await newHub.save();
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.json({status:"ok" , message: 'hub added sucessfully',hub : newHub});
-        return ;
+        res.json({ status: "ok", message: 'hub added sucessfully', hub: newHub });
+        return;
 
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-        res.json({status:"ok" , message: 'hub added sucessfully',hub : hub });
-        return ;
-    }catch (err) {
+        res.json({ status: "ok", message: 'hub added sucessfully', hub: hub });
+        return;
+    } catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
-        res.json({ message:err.message });
+        res.json({ message: err.message });
     }
 });
-router.get('/GetAllhubs',util.verifyGETToken,async(req,res)=>{
+router.get('/GetAllhubs', util.verifyGETToken, async (req, res) => {
     /*
      * #swagger.tags = ["Hub"]
      */
     try {
-    const records = await Hub.find().where('Owner').in(req.user._id.toString()).exec();
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.json({status:"ok" , message: 'Houses found', hubs : records });
-    } 
-    catch(e) {
-    console.log(e);
-    res.status(404).send('Not found');
+        const records = await Hub.find().where('Owner').in(req.user._id.toString()).exec();
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.json({ status: "ok", message: 'Houses found', hubs: records });
     }
-    return ;
+    catch (e) {
+        console.log(e);
+        res.status(404).send('Not found');
+    }
+    return;
 });
-router.get('/GetUserHubs',util.verifyGETToken,async(req,res)=>{
+router.get('/GetUserHubs', util.verifyGETToken, async (req, res) => {
     /*
      * #swagger.tags = ["Hub"]
      */
     try {
-    //const records = await House.find().where('_id').in(req.user.Houses).exec();
-    const records = await Hub.find({
-        Owner: {$elemMatch:  req.userId}
-     })
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.json({status:"ok" , message: 'hubs found', hubs : records });
-    } 
-    catch(e) {
-    console.log(e);
-    res.status(404).send('Not found');
+        //const records = await House.find().where('_id').in(req.user.Houses).exec();
+        const records = await Hub.find({
+            Owner: { $elemMatch: req.userId }
+        })
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.json({ status: "ok", message: 'hubs found', hubs: records });
     }
-    return ;
+    catch (e) {
+        console.log(e);
+        res.status(404).send('Not found');
+    }
+    return;
 });
-router.post('/Authhub',async (req,res) =>
-{
+router.post('/Authhub', async (req, res) => {
     /*
      * #swagger.tags = ["Hub"]
      */
     /*let user = await User.findOne({ _id : req.userId  }).limit(1);
     if (user.enabled == 1) {*/
-    try{
-        let ls = await Hub.findOne({ "UUID" : req.body.client });
+    try {
+        let ls = await Hub.findOne({ "UUID": req.body.client });
         //console.log(ls.Active);
         if (!ls) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             console.log("null");
             res.status(404).send('Not found');
-            return ;
+            return;
         }
-        if (! ls.enabled) {
+        if (!ls.enabled) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             console.log("Not enabled");
             res.status(404).send('Not Enabled');
-            return ;
+            return;
         }
         if (ls.MqttLogin === req.body.login && ls.Mqttpass === req.body.password) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            res.json({status:"ok" , message: 'success'});
-            return ;
+            res.json({ status: "ok", message: 'success' });
+            return;
         }
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         console.log('Not found');
         res.status(404).send('Not found');
-        return ;
-        
-    }catch (err) {
+        return;
+
+    } catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
-        res.json({ message:err.message });
+        res.json({ message: err.message });
     }
-/*} else {
-    res.json({ status:"err",message:"problem" });
-}*/
+    /*} else {
+        res.json({ status:"err",message:"problem" });
+    }*/
 });
 function RandomString(length) {
     let result = '';
@@ -210,8 +210,8 @@ function RandomString(length) {
     const charactersLength = characters.length;
     let counter = 0;
     while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      counter += 1;
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
     }
     return result;
 }
