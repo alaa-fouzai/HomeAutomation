@@ -145,18 +145,11 @@ router.post('/login', async (req, res) => {
             id: NewUser[0]._id,
         }
         let token = CreateJWT(req.body.email, NewUser[0]._id);
+
+
+
         const user = await User.findOne({ "email": req.user.email });
-        /*const Hubs = await Hub.find({
-            Owner: { $elemMatch: req.userId }
-        })
-        const LightSwitches = await Switch.findOne({ "UUID" : req.body.client });
-        const Houses = await House.find().where('_id').in(req.user.Houses).exec();
-        const Rooms = await Room.find({ "_id" : req.query.houseId });
-        const Switch = await Switch.findOne({"_id" : Mongoose.Types.ObjectId(req.body.id) } ).limit(1);
-        */
         resp = { ...user }
-        console.log(typeof (user.Houses));
-        console.log(user.Houses.length);
         for (i = 0; i < user.Houses.length; i++) {
             Houses = await House.findOne().where('_id').in(req.user.Houses).exec();
             for (j = 0; j < Houses.Rooms.length; j++) {
@@ -175,7 +168,6 @@ router.post('/login', async (req, res) => {
         }
 
 
-        console.log(resp);
         res.json({ status: "ok", message: 'Welcome Back', UserData: resp, token: token });
     } catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
