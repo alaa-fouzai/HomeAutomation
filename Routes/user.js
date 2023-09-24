@@ -145,7 +145,38 @@ router.post('/login', async (req, res) => {
             id: NewUser[0]._id,
         }
         let token = CreateJWT(req.body.email, NewUser[0]._id);
-        res.json({ status: "ok", message: 'Welcome Back', UserData: NewUser, token: token });
+        const user = await User.findOne({ "email": req.user.email });
+        /*const Hubs = await Hub.find({
+            Owner: { $elemMatch: req.userId }
+        })
+        const LightSwitches = await Switch.findOne({ "UUID" : req.body.client });
+        const Houses = await House.find().where('_id').in(req.user.Houses).exec();
+        const Rooms = await Room.find({ "_id" : req.query.houseId });
+        const Switch = await Switch.findOne({"_id" : Mongoose.Types.ObjectId(req.body.id) } ).limit(1);
+        */
+        resp = { ...user }
+        console.log(typeof (user.Houses));
+        console.log(user.Houses.length);
+        for (i = 0; i < user.Houses.length; i++) {
+            Houses = await House.findOne().where('_id').in(req.user.Houses).exec();
+            for (j = 0; j < Houses.Rooms.length; j++) {
+                Rooms = await Room.findOne({ "_id": Houses.Rooms[j] });
+                for (k = 0; k < Rooms.Devices.length; k++) {
+                    if (Rooms.Devices[k].type === "switch") {
+                        sw = await Switch.where('_id').in(Rooms.Devices[k].id).exec();
+                        Rooms.Devices[k] = sw
+                    }
+
+                }
+                Houses.Rooms[j] = Rooms
+            }
+            user.Houses[i] = Houses
+            resp = { ...user }
+        }
+
+
+        console.log(resp);
+        res.json({ status: "ok", message: 'Welcome Back', UserData: resp, token: token });
     } catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
         res.json({ message: err.message });
