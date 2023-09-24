@@ -122,7 +122,6 @@ router.post('/login', async (req, res) => {
      */
     try {
         // await new Promise(resolve => setTimeout(resolve, 5000));
-        console.log("login");
         const NewUser = await User.find({ email: req.body.email }).limit(1);
         //console.log(NewUser.length);
         //await sleep(2000);
@@ -145,30 +144,7 @@ router.post('/login', async (req, res) => {
             id: NewUser[0]._id,
         }
         let token = CreateJWT(req.body.email, NewUser[0]._id);
-
-
-
-        const user = await User.findOne({ "email": req.user.email });
-        resp = { ...user }
-        for (i = 0; i < user.Houses.length; i++) {
-            Houses = await House.findOne().where('_id').in(req.user.Houses).exec();
-            for (j = 0; j < Houses.Rooms.length; j++) {
-                Rooms = await Room.findOne({ "_id": Houses.Rooms[j] });
-                for (k = 0; k < Rooms.Devices.length; k++) {
-                    if (Rooms.Devices[k].type === "switch") {
-                        sw = await Switch.where('_id').in(Rooms.Devices[k].id).exec();
-                        Rooms.Devices[k] = sw
-                    }
-
-                }
-                Houses.Rooms[j] = Rooms
-            }
-            user.Houses[i] = Houses
-            resp = { ...user }
-        }
-
-
-        res.json({ status: "ok", message: 'Welcome Back', UserData: resp, token: token });
+        res.json({ status: "ok", message: 'Welcome Back', UserData: NewUser, token: token });
     } catch (err) {
         res.header("Access-Control-Allow-Headers", "*");
         res.json({ message: err.message });
