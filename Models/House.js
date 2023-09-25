@@ -17,6 +17,8 @@ const HouseSchema = mongoose.Schema(
         ,
         Rooms: []
         ,
+        Hubs: [String]
+        ,
         enabled: {
             type: Number,
             default: true
