@@ -294,8 +294,8 @@ router.post('/AuthUser', async (req, res) => {
     /*let user = await User.findOne({ _id : req.userId  }).limit(1);
     if (user.enabled == 1) {*/
     try {
-        let ls = await User.findOne({ "UUID": req.body.client });
-        //console.log(ls.Active);
+        let ls = await User.findOne({ MqttId: req.body.client });
+        //console.log(ls);
         if (!ls) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
