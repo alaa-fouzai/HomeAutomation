@@ -79,6 +79,18 @@ const UserSchema = mongoose.Schema(
             type: String,
             required: false
         },
+        MqttId: {
+            type: String,
+            required: false
+        },
+        MqttLogin: {
+            type: String,
+            required: true
+        },
+        Mqttpass: {
+            type: String,
+            required: true
+        },
         enabled: {
             type: Number,
             required: true

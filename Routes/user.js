@@ -8,6 +8,7 @@ const Room = require('../Models/Room.js');
 const Switch = require('../Models/Switch.js');
 const Mongoose = require('mongoose');
 const object = require('lodash/object');
+const { randomUUID } = require('crypto');
 router.post('/register', async (req, res) => {
     /*
      * #swagger.tags = ["User"]
@@ -24,6 +25,20 @@ router.post('/register', async (req, res) => {
     try {
         const NewUser = await User.find({ email: req.body.email });
         if (NewUser === undefined || NewUser.length == 0) {
+            newUUid = randomUUID();
+            while (true) {
+                let L = await User.findOne({ "UUID": newUUid });
+                if (!L) {
+                    console.log("User");
+                    break;
+                } else {
+                    newUUid = randomUUID();
+                    console.log(newUUid);
+                }
+            }
+            user.MqttId = newUUid;
+            user.MqttLogin = RandomString(6);
+            user.Mqttpass = RandomString(6);
             //add not allow duplicate
             user = await user.save();
             token = CreateJWT(user.email, user._id);
@@ -58,7 +73,6 @@ router.get('/users', async (req, res) => {
     }
 });
 router.get('/userInfo', util.verifyGETToken, async (req, res) => {
-
     /*
      * #swagger.tags = ["User"]
      */
@@ -91,12 +105,6 @@ router.get('/userInfo', util.verifyGETToken, async (req, res) => {
             user.Houses[i] = Houses
             resp = { ...user }
         }
-
-
-        console.log(resp);
-
-
-
         res.header("Access-Control-Allow-Headers", "*");
         res.json(resp._doc);
     } catch (e) {
@@ -279,9 +287,62 @@ router.delete('/:id', async (req, res) => {
         res.status(400).send({ error: error.message })
     }
 })
+router.post('/AuthUser', async (req, res) => {
+    /*
+     * #swagger.tags = ["Switch"]
+     */
+    /*let user = await User.findOne({ _id : req.userId  }).limit(1);
+    if (user.enabled == 1) {*/
+    try {
+        let ls = await User.findOne({ "UUID": req.body.client });
+        //console.log(ls.Active);
+        if (!ls) {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            console.log("null");
+            res.status(404).send('Not found');
+            return;
+        }
+        if (!ls.enabled) {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            console.log("Not enabled");
+            res.status(404).send('Not enabled');
+            return;
+        }
+        if (ls.MqttLogin === req.body.login && ls.Mqttpass === req.body.password) {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            res.json({ status: "ok", message: 'success' });
+            return;
+        }
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        console.log('Not found');
+        res.status(404).send('Not found');
+        return;
 
+    } catch (err) {
+        res.header("Access-Control-Allow-Headers", "*");
+        res.json({ message: err.message });
+    }
+    /*} else {
+        res.json({ status:"err",message:"problem" });
+    }*/
+});
 function CreateJWT(email, id) {
     let token = jwt.sign({ email: email, id: id }, process.env.token_Key);
     return token;
+}
+function RandomString(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        counter += 1;
+    }
+    return result;
 }
 module.exports = router;
