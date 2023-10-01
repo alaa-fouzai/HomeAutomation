@@ -35,40 +35,7 @@ router.post('/AddHubToUser', util.verifyPOSTToken, async (req, res) => {
      * #swagger.tags = ["Hub"]
      */
     try {
-
-
-        /**        // add light to user,and room 
-        let h;
-        let r;
-        if (req.user.enabled && req.user.Houses.includes(req.body.houseId)) {
-            h = await House.findOne({ "_id" : req.body.houseId });
-            h.Devices.push({"type":"LightSwitch" , "id":newLightSwitch._id });
-        
-        } else {
-            x = await LightSwitch.deleteOne({ _id: newLightSwitch._id });
-            res.status(401).send('not your house');
-            return ;
-        }
-        //check room
-        if (req.user.enabled && h.Rooms.includes(req.body.roomId)) {
-            r = await Room.findOne({ "_id" : req.body.roomId });
-            r.Devices.push({"type":"LightSwitch" , "id":newLightSwitch._id });
-        } else {
-            r = await LightSwitch.deleteOne({ _id: newLightSwitch._id });
-            res.status(401).send('not your room');
-            return ;
-        }
-        h=await h.save();
-        r=await r.save(); */
-
-
-        /*let hub = new Hub({
-            Name : req.body.HubName,
-            Owner: [{"admin" :req.user._id.toString()}]
-        });*/
         let hub = await Hub.findOne({ "UUID": req.body.hubUUID });
-        console.log(hub.House)
-        console.log(hub.House.indexOf(req.body.houseId))
         if (hub.House.indexOf(req.body.houseId) > -1) {
             res.header("Access-Control-Allow-Headers", "*");
             res.status(401).send('Already added to house');

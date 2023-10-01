@@ -75,6 +75,8 @@ router.post('/AddContactSensorToDatabase', util.verifyPOSTToken, async (req, res
             Name: req.body.Name,
             Active: false,
             UUID: newUUid,
+            MqttLogin: util.RandomString(6),
+            Mqttpass: util.RandomString(6)
         });
         newContact = await newContact.save();
         res.header("Access-Control-Allow-Origin", "*");
@@ -131,5 +133,54 @@ router.post('/newData', async (req, res) => {
         res.json({ message: err.message });
     }
 
+});
+router.post('/AddCSToUser', util.verifyPOSTToken, async (req, res) => {
+    /*
+     * #swagger.tags = ["ContactSensor"]
+     */
+    try {
+        let hub = await Hub.findOne({ "UUID": req.body.ContactSensorUUID });
+        console.log(hub.House)
+        console.log(hub.House.indexOf(req.body.houseId))
+        if (hub.House.indexOf(req.body.houseId) > -1) {
+            res.header("Access-Control-Allow-Headers", "*");
+            res.status(401).send('Already added to house');
+            return;
+        }
+        hub.Name = req.body.deviceName;
+        hub.House.push(req.body.houseId);
+
+        //update user
+        u = await User.findOne({ "email": req.body.email });//change to user id
+        if (u.Hubs.indexOf(req.body.houseId) > -1) {
+            res.header("Access-Control-Allow-Headers", "*");
+            res.status(401).send('could not find User');
+            return;
+        }
+        u.Hubs.push(hub._id.toString());
+
+        //update house
+        let h = await House.findOne({ "_id": req.body.houseId });
+        if (h.Hubs.indexOf(req.body.houseId) > -1) {
+            res.header("Access-Control-Allow-Headers", "*");
+            res.status(401).send('could not find House');
+            return;
+        }
+        h.Hubs.push(hub._id.toString());
+
+
+        /* save everything*/
+        hub = await hub.save();
+        u = await u.save();
+        h = await h.save();
+
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.json({ status: "ok", message: 'hub added sucessfully', hub: hub, user: u, house: h });
+        return;
+    } catch (err) {
+        res.header("Access-Control-Allow-Headers", "*");
+        res.json({ message: err.message });
+    }
 });
 module.exports = router;

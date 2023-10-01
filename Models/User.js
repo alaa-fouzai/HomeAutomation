@@ -1,3 +1,4 @@
+const object = require('lodash/object');
 const mongoose = require('mongoose');
 /**
  * @swagger
@@ -104,6 +105,8 @@ const UserSchema = mongoose.Schema(
         Houses: []
         ,
         Hubs: [String]
+        ,
+        Devices: [Object]
         ,
     }
 );

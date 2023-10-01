@@ -87,8 +87,6 @@ router.get('/userInfo', util.verifyGETToken, async (req, res) => {
         const Switch = await Switch.findOne({"_id" : Mongoose.Types.ObjectId(req.body.id) } ).limit(1);
         */
         resp = { ...user }
-        console.log(typeof (user.Houses));
-        console.log(user.Houses.length);
         for (i = 0; i < user.Houses.length; i++) {
             Houses = await House.findOne().where('_id').in(req.user.Houses).exec();
             for (j = 0; j < Houses.Rooms.length; j++) {
