@@ -104,6 +104,8 @@ router.get('/userInfo', util.verifyGETToken, async (req, res) => {
             resp = { ...user }
         }
         // add hubs to user
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         res.header("Access-Control-Allow-Headers", "*");
         res.json(resp._doc);
     } catch (e) {
