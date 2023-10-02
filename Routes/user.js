@@ -9,6 +9,8 @@ const Switch = require('../Models/Switch.js');
 const Mongoose = require('mongoose');
 const object = require('lodash/object');
 const { randomUUID } = require('crypto');
+const ContactSensor = require('../Models/ContactSensor');
+const { slice } = require('lodash');
 router.post('/register', async (req, res) => {
     /*
      * #swagger.tags = ["User"]
@@ -87,22 +89,21 @@ router.get('/userInfo', util.verifyGETToken, async (req, res) => {
         const Switch = await Switch.findOne({"_id" : Mongoose.Types.ObjectId(req.body.id) } ).limit(1);
         */
         resp = { ...user }
+        let devices = [];
         for (i = 0; i < user.Houses.length; i++) {
             Houses = await House.findOne().where('_id').in(req.user.Houses).exec();
-            for (j = 0; j < Houses.Rooms.length; j++) {
-                Rooms = await Room.findOne({ "_id": Houses.Rooms[j] });
-                for (k = 0; k < Rooms.Devices.length; k++) {
-                    if (Rooms.Devices[k].type === "switch") {
-                        sw = await Switch.where('_id').in(Rooms.Devices[k].id).exec();
-                        Rooms.Devices[k] = sw
-                    }
-
+            for (j = 0; j < Houses.Devices.length; j++) {
+                if (Houses.Devices[j].deviceType === "contactSensor") {
+                    let cs = await ContactSensor.findOne({ _id: Houses.Devices[j].deviceId });
+                    console.log("cs", cs);
+                    Houses.Devices[j].deviceData = cs;
+                    devices.push(cs);
                 }
-                Houses.Rooms[j] = Rooms
             }
             user.Houses[i] = Houses
             resp = { ...user }
         }
+        // add hubs to user
         res.header("Access-Control-Allow-Headers", "*");
         res.json(resp._doc);
     } catch (e) {

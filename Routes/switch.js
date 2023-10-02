@@ -10,6 +10,7 @@ var util = require('../utilities/utilities');
 const Room = require('../Models/Room');
 const House = require('../Models/House');
 
+/* switch is relay */
 router.post('/AddNew', util.verifyPOSTToken, async (req, res) => {
     /*
      * #swagger.tags = ["Switch"]
