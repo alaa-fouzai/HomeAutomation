@@ -52,7 +52,9 @@ async function verifyPOSTToken(req, res, next) {
 async function verifyGETToken(req, res, next) {
     let payload;
     var bearerToken;
+
     var bearerHeader = req.headers["authorization"];
+    console.log(bearerHeader)
     if (bearerHeader === 'null') {
         return res.status(403).send('Unauthorized request')
     }

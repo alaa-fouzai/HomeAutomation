@@ -421,6 +421,42 @@
         }
       }
     },
+    "/api/users/AuthUser": {
+      "post": {
+        "tags": [
+          "Switch"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "client": {
+                  "example": "any"
+                },
+                "login": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
     "/api/house/Gethouse": {
       "get": {
         "tags": [
@@ -547,6 +583,62 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/house/AddDevice": {
+      "post": {
+        "tags": [
+          "House"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "devicetype": {
+                  "example": "any"
+                },
+                "ContactUUID": {
+                  "example": "any"
+                },
+                "houseId": {
+                  "example": "any"
+                },
+                "deviceUUID": {
+                  "example": "any"
+                },
+                "deviceName": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "401": {
             "description": "Unauthorized"
@@ -788,6 +880,9 @@
                   "example": "any"
                 },
                 "houseId": {
+                  "example": "any"
+                },
+                "deviceName": {
                   "example": "any"
                 },
                 "email": {
@@ -1092,9 +1187,79 @@
           "ContactSensor"
         ],
         "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "example": "any"
+                },
+                "id": {
+                  "example": "any"
+                },
+                "battery": {
+                  "example": "any"
+                },
+                "sensorValue": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/contactSensor/AddCSToUser": {
+      "post": {
+        "tags": [
+          "ContactSensor"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ContactSensorUUID": {
+                  "example": "any"
+                },
+                "deviceName": {
+                  "example": "any"
+                },
+                "houseId": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
