@@ -88,6 +88,11 @@ router.get('/userInfo', util.verifyGETToken, async (req, res) => {
         const Rooms = await Room.find({ "_id" : req.query.houseId });
         const Switch = await Switch.findOne({"_id" : Mongoose.Types.ObjectId(req.body.id) } ).limit(1);
         */
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.header("Access-Control-Allow-Headers", "*");
+        res.json(user);
+        return;
         resp = { ...user }
         let devices = [];
         for (i = 0; i < user.Houses.length; i++) {

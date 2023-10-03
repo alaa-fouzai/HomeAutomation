@@ -65,12 +65,14 @@ async function verifyGETToken(req, res, next) {
     } else {
         return res.status(403);
     }
+    console.log(req.token)
     try {
         payload = jwt.verify(req.token, process.env.token_Key);
 
     }
     catch (e) {
-        return res.status(400).send('Invalid User');
+        console.log('Invalid User')
+        return res.status(404).send('Invalid User');
     }
     if (!payload) {
         return res.status(401).send('Unauthorized request');
