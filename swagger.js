@@ -5,7 +5,7 @@ const doc = {
     title: 'My API',
     description: 'Description',
   },
-  host: 'homeautomation-zj8l.onrender.com/',
+  host: 'homeautomation-zj8l.onrender.com',
   schemes: ['https'],
 };
 
