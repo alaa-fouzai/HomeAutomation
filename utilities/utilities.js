@@ -54,7 +54,6 @@ async function verifyGETToken(req, res, next) {
     var bearerToken;
 
     var bearerHeader = req.headers["authorization"];
-    console.log(bearerHeader)
     if (bearerHeader === 'null') {
         return res.status(403).send('Unauthorized request')
     }
@@ -65,7 +64,6 @@ async function verifyGETToken(req, res, next) {
     } else {
         return res.status(403);
     }
-    console.log(req.token)
     try {
         payload = jwt.verify(req.token, process.env.token_Key);
 
