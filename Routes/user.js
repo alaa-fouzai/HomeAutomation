@@ -11,6 +11,7 @@ const object = require('lodash/object');
 const { randomUUID } = require('crypto');
 const ContactSensor = require('../Models/ContactSensor');
 const { slice } = require('lodash');
+const Hub = require('../Models/Hub');
 router.post('/register', async (req, res) => {
     /*
      * #swagger.tags = ["User"]
@@ -79,7 +80,7 @@ router.get('/userInfo', util.verifyGETToken, async (req, res) => {
      * #swagger.tags = ["User"]
      */
     try {
-        const user = await User.findOne({ "email": req.user.email });
+        let user = await User.findOne({ "email": req.user.email });
         /*const Hubs = await Hub.find({
             Owner: { $elemMatch: req.userId }
         })
@@ -95,7 +96,7 @@ router.get('/userInfo', util.verifyGETToken, async (req, res) => {
             for (j = 0; j < Houses.Devices.length; j++) {
                 if (Houses.Devices[j].deviceType === "contactSensor") {
                     let cs = await ContactSensor.findOne({ _id: Houses.Devices[j].deviceId });
-                    console.log("cs", cs);
+                    //console.log("cs", cs);
                     Houses.Devices[j].deviceData = cs;
                     devices.push(cs);
                 }
@@ -103,7 +104,19 @@ router.get('/userInfo', util.verifyGETToken, async (req, res) => {
             user.Houses[i] = Houses
             resp = { ...user }
         }
-        // add hubs to user
+        console.log(user.Hubs)
+        userHubs = [];
+        for (i = 0; i < user.Hubs.length; i++) {
+            let hh = await Hub.findOne().where('_id').in(user.Hubs[i]).exec();
+            userHubs.push(hh);
+            user.Hubs[i] = hh;
+        }
+        for (i = 0; i < user.Devices.length; i++) {
+            if (user.Devices[i].deviceType === "contactSensor") {
+                let cs = await ContactSensor.findOne({ _id: user.Devices[i].deviceId });
+                user.Devices[i] = cs;
+            }
+        }
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         res.header("Access-Control-Allow-Headers", "*");

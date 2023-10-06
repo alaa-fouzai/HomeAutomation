@@ -104,7 +104,7 @@ const UserSchema = mongoose.Schema(
         ,
         Houses: []
         ,
-        Hubs: [String]
+        Hubs: []
         ,
         Devices: [Object]
         ,
